@@ -1,0 +1,30 @@
+from django.contrib.auth import get_user_model
+from rest_framework import viewsets, permissions, status
+from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
+
+from authentication.serializers import UserSerializer, SignUpSerializer
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    User = get_user_model()
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class UserSignUpView(GenericAPIView):
+
+    serializer_class = SignUpSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            serializer.create(serializer.data)
+            return Response(serializer.data['email'],
+                            status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
