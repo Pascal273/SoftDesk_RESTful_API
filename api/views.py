@@ -1,11 +1,8 @@
-from django.views.generic import detail
 from rest_framework import viewsets, permissions, status
 from rest_framework.exceptions import NotFound
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404, get_list_or_404
-from rest_framework.decorators import action
 
 from .serializers import *
 
@@ -33,3 +30,4 @@ class IssueViewSet(viewsets.ModelViewSet):
         except Project.DoesNotExist:
             raise NotFound('A Project with that id does not exist')
         return self.queryset.filter(project=project)
+
