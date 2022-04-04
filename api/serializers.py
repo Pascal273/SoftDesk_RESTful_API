@@ -5,14 +5,28 @@ from api.models import *
 
 
 class ContributorSerializer(serializers.ModelSerializer):
+    contributor_id = serializers.IntegerField(
+        source='id', read_only=True)
     user_id = serializers.IntegerField(
         source='user.id', read_only=True)
     project_id = serializers.IntegerField(
         source='project.id', read_only=True)
 
+    def create(self, validated_data):
+        """
+        Create Methode altered to add the project that matches the PK from URL
+        automatically.
+        """
+        project = Project.objects.get(
+            id=self.context['view'].kwargs['project_pk'])
+        validated_data['project'] = project
+        return Contributor.objects.create(**validated_data)
+
     class Meta:
         model = Contributor
-        fields = ['user_id', 'project_id', 'permission', 'role']
+        fields = ['contributor_id', 'user', 'user_id', 'project_id',
+                  'permission', 'role']
+        extra_kwargs = {'user': {'write_only': True}}
 
 
 class CommentSerializer(serializers.ModelSerializer):

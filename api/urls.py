@@ -13,7 +13,7 @@ contributor_router = routers.NestedDefaultRouter(
     lookup='project'
 )
 contributor_router.register(
-    r'contributors', views.ContributorViewSet, basename='project-contributor')
+    r'users', views.ContributorViewSet, basename='project-users')
 
 issue_router = routers.NestedDefaultRouter(
     router,
