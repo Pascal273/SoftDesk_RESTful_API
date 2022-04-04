@@ -13,8 +13,26 @@ class Project(models.Model):
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=255)
     type = models.CharField(max_length=30, choices=TYPES)
-    author = models.ForeignKey(to=settings.AUTH_USER_MODEL,
-                               on_delete=models.CASCADE,)
+    author = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='owner'
+    )
+    contributors = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through='Contributor',
+        related_name='creator',
+        blank=True
+    )
+    issues = models.ForeignKey(
+        'Issue',
+        on_delete=models.CASCADE,
+        related_name='issue',
+        null=True
+    )
+
+    def __str__(self):
+        return self.title
 
 
 class Contributor(models.Model):
@@ -33,11 +51,15 @@ class Contributor(models.Model):
     project = models.ForeignKey(to=Project,
                                 on_delete=models.CASCADE,
                                 related_name='project')
-    permission = models.CharField(max_length=30, choices=PERMISSIONS)
-    role = models.CharField(max_length=30, choices=ROLES)
+    permission = models.CharField(
+        max_length=30, choices=PERMISSIONS, null=True)
+    role = models.CharField(max_length=30, choices=ROLES, null=True)
 
     class Meta:
         unique_together = ('user', 'project')
+
+    def __str__(self):
+        return f"{self.user}_{self.project}"
 
 
 class Issue(models.Model):
@@ -71,6 +93,15 @@ class Issue(models.Model):
                                  related_name='assignee',
                                  null=True)
     created_time = models.DateTimeField(auto_now_add=True)
+    comments = models.ForeignKey(
+        'Comment',
+        on_delete=models.CASCADE,
+        related_name='comment',
+        null=True
+    )
+
+    def __str__(self):
+        return self.title
 
 
 class Comment(models.Model):
@@ -80,3 +111,6 @@ class Comment(models.Model):
     issue = models.ForeignKey(to=Issue,
                               on_delete=models.CASCADE)
     created_time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.id
