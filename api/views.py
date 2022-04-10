@@ -1,7 +1,5 @@
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions
 from rest_framework.exceptions import NotFound
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 
 from .serializers import *
@@ -34,7 +32,7 @@ class ContributorViewSet(viewsets.ModelViewSet):
 
 
 class IssueViewSet(viewsets.ModelViewSet):
-    queryset = Issue.objects.all().select_related('project')
+    queryset = Issue.objects.all()
     serializer_class = IssueSerializer
     permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly,
                           IsContributorOrReadOnly]
@@ -49,7 +47,7 @@ class IssueViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all().select_related('issue')
+    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly,
                           IsRelatedIssueAuthor]
