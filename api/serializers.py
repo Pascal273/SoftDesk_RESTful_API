@@ -71,8 +71,8 @@ class IssueSerializer(serializers.ModelSerializer):
 
     def get_comments(self, issue):
         """
-        Gets representation from CommentSerializer for all the Issue-objects
-        that are related to this project.
+        Gets representation from CommentSerializer for all the Comment-objects
+        that are related to this Issue.
         """
         comments = Comment.objects.filter(issue=issue)
         return CommentSerializer(
@@ -125,7 +125,7 @@ class ProjectSerializer(NestedHyperlinkedModelSerializer):
         """
         contributors = Contributor.objects.filter(project=project)
         return ContributorSerializer(
-            contributors, many=True, read_only=True, required=False).data
+            contributors, many=True, required=False).data
 
     def create(self, validated_data):
         """
