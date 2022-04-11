@@ -13,12 +13,13 @@ class UserViewSet(viewsets.ModelViewSet):
     User = get_user_model()
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated,]
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
 
 
 class UserSignUpView(GenericAPIView):
 
     serializer_class = SignUpSerializer
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)

@@ -14,13 +14,15 @@ class ProjectViewSet(viewsets.ModelViewSet):
     """
     queryset = Project.objects.all().order_by('title')
     serializer_class = ProjectSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly,
+                          IsContributor]
 
 
 class ContributorViewSet(viewsets.ModelViewSet):
     queryset = Contributor.objects.all()
     serializer_class = ContributorSerializer
-    permission_classes = [permissions.IsAuthenticated, IsRelatedProjectAuthor]
+    permission_classes = [permissions.IsAuthenticated,
+                          IsRelatedProjectAuthorOrReadOnly]
 
     def get_queryset(self, *args, **kwargs):
         project_id = self.kwargs.get('project_pk')
@@ -35,7 +37,7 @@ class IssueViewSet(viewsets.ModelViewSet):
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
     permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly,
-                          IsContributorOrReadOnly]
+                          IsRelatedProjectContributor]
 
     def get_queryset(self, *args, **kwargs):
         project_id = self.kwargs.get('project_pk')
