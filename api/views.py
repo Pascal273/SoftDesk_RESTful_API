@@ -17,6 +17,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly,
                           IsContributor]
 
+    def get_queryset(self, *args, **kwargs):
+        """Show only Project in which the User is a contributor."""
+        user = self.request.user
+        projects = self.queryset.filter(contributors=user)
+        return projects
+
 
 class ContributorViewSet(viewsets.ModelViewSet):
     queryset = Contributor.objects.all()

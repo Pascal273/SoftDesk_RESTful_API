@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
 from api.models import *
+from authentication.models import User
 
 
 class ContributorSerializer(serializers.ModelSerializer):
@@ -16,17 +17,25 @@ class ContributorSerializer(serializers.ModelSerializer):
         """
         Create Methode altered to add the project that matches the PK from URL
         automatically.
+        Permission gets added automatically matching the role of the
+        contributor.
         """
         project = Project.objects.get(
             id=self.context['view'].kwargs['project_pk'])
         validated_data['project'] = project
+        role = validated_data['role']
+        if role == 'AUTHOR':
+            validated_data['permission'] = 'manage'
+        else:
+            validated_data['permission'] = 'edit'
         return Contributor.objects.create(**validated_data)
 
     class Meta:
         model = Contributor
         fields = ['contributor_id', 'user', 'user_id', 'project_id',
                   'permission', 'role']
-        extra_kwargs = {'user': {'write_only': True}}
+        extra_kwargs = {'user': {'write_only': True},
+                        'permission': {'read_only': True}}
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -63,7 +72,6 @@ class IssueSerializer(serializers.ModelSerializer):
         default=serializers.CurrentUserDefault())
     author_user_id = serializers.IntegerField(
         source='author.id', read_only=True)
-    # project_detail = ProjectSerializer(source='project', read_only=True)
     project_id = serializers.IntegerField(default='project.id', read_only=True)
     assignee_user_id = serializers.IntegerField(
         source='assignee.id', read_only=True)
@@ -82,10 +90,24 @@ class IssueSerializer(serializers.ModelSerializer):
         """
         Create Methode altered to add the project that matches the PK from URL
         automatically.
+        Set the author as the assignee by default if no assignee was
+        selected.
+        If the selected assignee is not already a contributor of the related
+        project it will be added automatically.
         """
         project = Project.objects.get(
             id=self.context['view'].kwargs['project_pk'])
         validated_data['project'] = project
+        if not validated_data['assignee']:
+            validated_data['assignee'] = validated_data['author']
+        if validated_data['assignee'] not in project.contributors.all():
+            contributor = Contributor.objects.create(
+                user=validated_data['assignee'],
+                project=project,
+                permission='edit',
+                role='EDITOR'
+            )
+            contributor.save()
         return Issue.objects.create(**validated_data)
 
     class Meta:
@@ -136,7 +158,7 @@ class ProjectSerializer(NestedHyperlinkedModelSerializer):
         contributors = Contributor.objects.create(
             user=validated_data['author'],
             project=project,
-            permission='write',
+            permission='manage',
             role='AUTHOR'
         )
         contributors.save()

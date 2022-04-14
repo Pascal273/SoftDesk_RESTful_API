@@ -4,6 +4,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
 from authentication.serializers import UserSerializer, SignUpSerializer
+from .permissions import IsNotAuthenticated
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -17,9 +18,11 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class UserSignUpView(GenericAPIView):
-
+    """
+    API endpoint that allows not new users to signup.
+    """
     serializer_class = SignUpSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.AllowAny, IsNotAuthenticated]
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)

@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from rest_framework.exceptions import NotFound
 
 from api.models import Project, Issue
 
@@ -23,7 +24,10 @@ class IsContributor(permissions.BasePermission):
     def has_permission(self, request, view):
         # print(view)
         if 'pk' in view.kwargs.keys():
-            project = Project.objects.get(id=view.kwargs['pk'])
+            try:
+                project = Project.objects.get(id=view.kwargs['pk'])
+            except Project.DoesNotExist:
+                raise NotFound('A Project with that id does not exist')
             if request.user in project.contributors.all():
                 return True
             return False
@@ -40,7 +44,10 @@ class IsRelatedProjectAuthorOrReadOnly(permissions.BasePermission):
         Only the author of the Project is allowed to add (post) a new
         object to it.
         """
-        project = Project.objects.get(id=view.kwargs['project_pk'])
+        try:
+            project = Project.objects.get(id=view.kwargs['project_pk'])
+        except Project.DoesNotExist:
+            raise NotFound('A Project with that id does not exist')
         if request.user == project.author:
             return True
         if request.method != 'POST':
@@ -86,8 +93,6 @@ class IsRelatedProjectContributor(permissions.BasePermission):
         project = Project.objects.get(id=view.kwargs['project_pk'])
         if request.user in project.contributors.all():
             return True
-        # if request.method != 'POST':
-        #     return True
         return False
 
     def has_object_permission(self, request, view, obj):
@@ -97,3 +102,13 @@ class IsRelatedProjectContributor(permissions.BasePermission):
         # write permissions are only allowed to the author
         project = obj.project
         return request.user in project.contributors.all()
+
+
+class IsNotAuthenticated(permissions.BasePermission):
+    """
+    Custom permission that returns True if the user is not authenticated.
+    """
+    def has_permission(self, request, view):
+        if request.user.is_authenticated:
+            return False
+        return True

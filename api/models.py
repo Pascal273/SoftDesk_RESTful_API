@@ -37,12 +37,12 @@ class Project(models.Model):
 
 class Contributor(models.Model):
     PERMISSIONS = (
-        ('read', 'read'),
-        ('write', 'write'),
+        ('manage', 'manage'),
+        ('edit', 'edit'),
     )
     ROLES = (
         ('AUTHOR', 'AUTHOR'),
-        ('MEMBER', 'MEMBER')
+        ('EDITOR', 'EDITOR')
     )
 
     user = models.ForeignKey(to=settings.AUTH_USER_MODEL,
