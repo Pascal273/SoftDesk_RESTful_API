@@ -1,4 +1,5 @@
 from rest_framework import viewsets, permissions
+from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 from django.contrib.auth import get_user_model
 
@@ -23,8 +24,16 @@ class ProjectViewSet(viewsets.ModelViewSet):
         projects = self.queryset.filter(contributors=user)
         return projects
 
+    def destroy(self, request, *args, **kwargs):
+        project = self.get_object()
+        project.delete()
+        return Response({'message': 'project has been deleted'})
+
 
 class ContributorViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows contributor-tables to be viewed.
+    """
     queryset = Contributor.objects.all()
     serializer_class = ContributorSerializer
     permission_classes = [permissions.IsAuthenticated,
@@ -38,8 +47,16 @@ class ContributorViewSet(viewsets.ModelViewSet):
             raise NotFound('A Project with that id does not exist')
         return self.queryset.filter(project=project)
 
+    def destroy(self, request, *args, **kwargs):
+        contributor = self.get_object()
+        contributor.delete()
+        return Response({'message': 'contributor has been deleted'})
+
 
 class IssueViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows issues to be viewed.
+    """
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
     permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly,
@@ -53,8 +70,16 @@ class IssueViewSet(viewsets.ModelViewSet):
             raise NotFound('A Project with that id does not exist')
         return self.queryset.filter(project=project)
 
+    def destroy(self, request, *args, **kwargs):
+        issue = self.get_object()
+        issue.delete()
+        return Response({'message': 'issue has been deleted'})
+
 
 class CommentViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows comments to be viewed.
+    """
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly,
@@ -67,3 +92,8 @@ class CommentViewSet(viewsets.ModelViewSet):
         except Issue.DoesNotExist:
             raise NotFound('A Issue with that id does not exist')
         return self.queryset.filter(issue=issue)
+
+    def destroy(self, request, *args, **kwargs):
+        comment = self.get_object()
+        comment.delete()
+        return Response({'message': 'comment has been deleted'})

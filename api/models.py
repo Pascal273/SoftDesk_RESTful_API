@@ -42,7 +42,7 @@ class Contributor(models.Model):
     )
     ROLES = (
         ('AUTHOR', 'AUTHOR'),
-        ('EDITOR', 'EDITOR')
+        ('COLLABORATOR', 'COLLABORATOR')
     )
 
     user = models.ForeignKey(to=settings.AUTH_USER_MODEL,

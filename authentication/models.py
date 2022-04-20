@@ -44,3 +44,6 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['first_name', 'last_name', 'password']
 
     objects = UserManager()
+
+    def __str__(self):
+        return self.email

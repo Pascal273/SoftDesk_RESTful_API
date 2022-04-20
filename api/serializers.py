@@ -12,6 +12,8 @@ class ContributorSerializer(serializers.ModelSerializer):
         source='user.id', read_only=True)
     project_id = serializers.IntegerField(
         source='project.id', read_only=True)
+    user = serializers.SlugRelatedField(
+        slug_field='email', queryset=User.objects.all(), write_only=True)
 
     def create(self, validated_data):
         """
@@ -24,6 +26,8 @@ class ContributorSerializer(serializers.ModelSerializer):
             id=self.context['view'].kwargs['project_pk'])
         validated_data['project'] = project
         role = validated_data['role']
+        if not role:
+            validated_data['role'] = 'COLLABORATOR'
         if role == 'AUTHOR':
             validated_data['permission'] = 'manage'
         else:
@@ -34,8 +38,7 @@ class ContributorSerializer(serializers.ModelSerializer):
         model = Contributor
         fields = ['contributor_id', 'user', 'user_id', 'project_id',
                   'permission', 'role']
-        extra_kwargs = {'user': {'write_only': True},
-                        'permission': {'read_only': True}}
+        extra_kwargs = {'permission': {'read_only': True}}
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -76,6 +79,8 @@ class IssueSerializer(serializers.ModelSerializer):
     assignee_user_id = serializers.IntegerField(
         source='assignee.id', read_only=True)
     comments = serializers.SerializerMethodField()  # -> get_comments
+    assignee = serializers.SlugRelatedField(
+        slug_field='email', queryset=User.objects.all(), write_only=True)
 
     def get_comments(self, issue):
         """
@@ -105,7 +110,7 @@ class IssueSerializer(serializers.ModelSerializer):
                 user=validated_data['assignee'],
                 project=project,
                 permission='edit',
-                role='EDITOR'
+                role='COLLABORATOR'
             )
             contributor.save()
         return Issue.objects.create(**validated_data)
@@ -115,7 +120,6 @@ class IssueSerializer(serializers.ModelSerializer):
         fields = ['issue_id', 'title', 'description', 'tag', 'priority',
                   'project_id', 'status', 'author', 'author_user_id',
                   'assignee', 'assignee_user_id', 'created_time', 'comments']
-        extra_kwargs = {'assignee': {'write_only': True}}
 
 
 class ProjectSerializer(NestedHyperlinkedModelSerializer):
