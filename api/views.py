@@ -25,9 +25,15 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return projects
 
     def destroy(self, request, *args, **kwargs):
+        """Destroy method with response"""
         project = self.get_object()
         project.delete()
         return Response({'message': 'project has been deleted'})
+
+    def update(self, request, *args, **kwargs):
+        """Update method that allows partial updates"""
+        kwargs['partial'] = True
+        return super().update(request, *args, **kwargs)
 
 
 class ContributorViewSet(viewsets.ModelViewSet):
@@ -48,6 +54,7 @@ class ContributorViewSet(viewsets.ModelViewSet):
         return self.queryset.filter(project=project)
 
     def destroy(self, request, *args, **kwargs):
+        """Destroy method with response"""
         contributor = self.get_object()
         contributor.delete()
         return Response({'message': 'contributor has been deleted'})
@@ -71,9 +78,15 @@ class IssueViewSet(viewsets.ModelViewSet):
         return self.queryset.filter(project=project)
 
     def destroy(self, request, *args, **kwargs):
+        """Destroy method with response"""
         issue = self.get_object()
         issue.delete()
         return Response({'message': 'issue has been deleted'})
+
+    def update(self, request, *args, **kwargs):
+        """Update method that allows partial updates"""
+        kwargs['partial'] = True
+        return super().update(request, *args, **kwargs)
 
 
 class CommentViewSet(viewsets.ModelViewSet):

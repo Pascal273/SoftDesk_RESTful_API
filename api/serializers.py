@@ -80,7 +80,8 @@ class IssueSerializer(serializers.ModelSerializer):
         source='assignee.id', read_only=True)
     comments = serializers.SerializerMethodField()  # -> get_comments
     assignee = serializers.SlugRelatedField(
-        slug_field='email', queryset=User.objects.all(), write_only=True)
+        slug_field='email', queryset=User.objects.all(),
+        write_only=True, allow_null=True)
 
     def get_comments(self, issue):
         """
