@@ -20,7 +20,7 @@ issue_router = routers.NestedDefaultRouter(
     r'projects',
     lookup='project',
 )
-issue_router.register(r'issues', views.IssueViewSet, basename='project-issue')
+issue_router.register(r'issues', views.IssueViewSet)
 
 comment_router = routers.NestedDefaultRouter(
     issue_router,

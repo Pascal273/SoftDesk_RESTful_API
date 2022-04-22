@@ -13,7 +13,7 @@ class ContributorSerializer(serializers.ModelSerializer):
     project_id = serializers.IntegerField(
         source='project.id', read_only=True)
     user = serializers.SlugRelatedField(
-        slug_field='email', queryset=User.objects.all(), write_only=True)
+        slug_field='email', queryset=User.objects.all())
 
     def create(self, validated_data):
         """

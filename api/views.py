@@ -69,6 +69,11 @@ class IssueViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly,
                           IsRelatedProjectContributor]
 
+    def get_serializer_context(self):
+        context = super(IssueViewSet, self).get_serializer_context()
+        context.update({'request': self.request})
+        return context
+
     def get_queryset(self, *args, **kwargs):
         project_id = self.kwargs.get('project_pk')
         try:
