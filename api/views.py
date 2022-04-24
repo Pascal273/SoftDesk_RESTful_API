@@ -4,7 +4,13 @@ from rest_framework.exceptions import NotFound
 from django.contrib.auth import get_user_model
 
 from .serializers import *
-from authentication.permissions import *
+from authentication.permissions import (
+    IsContributor,
+    IsAuthorOrReadOnly,
+    IsRelatedIssueAuthor,
+    IsRelatedProjectContributor,
+    IsRelatedProjectAuthorOrReadOnly,
+)
 
 User = get_user_model()
 
