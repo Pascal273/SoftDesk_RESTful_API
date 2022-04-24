@@ -43,7 +43,8 @@ class ContributorViewSet(viewsets.ModelViewSet):
     queryset = Contributor.objects.all()
     serializer_class = ContributorSerializer
     permission_classes = [permissions.IsAuthenticated,
-                          IsRelatedProjectAuthorOrReadOnly]
+                          IsRelatedProjectAuthorOrReadOnly,
+                          IsRelatedProjectContributor]
 
     def get_queryset(self, *args, **kwargs):
         project_id = self.kwargs.get('project_pk')
@@ -101,7 +102,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly,
-                          IsRelatedIssueAuthor]
+                          IsRelatedIssueAuthor, IsRelatedProjectContributor]
 
     def get_queryset(self, *args, **kwargs):
         issue_id = self.kwargs.get('issue_pk')
@@ -112,6 +113,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         return self.queryset.filter(issue=issue)
 
     def destroy(self, request, *args, **kwargs):
+        """Destroy method with response"""
         comment = self.get_object()
         comment.delete()
         return Response({'message': 'comment has been deleted'})

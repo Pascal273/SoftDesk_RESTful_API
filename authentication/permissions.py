@@ -84,7 +84,7 @@ class IsRelatedIssueAuthor(permissions.BasePermission):
 class IsRelatedProjectContributor(permissions.BasePermission):
     """
     Custom permission to only allows user that are in the contributor list of
-    a project to CRUD Issues.
+    a project to CRUD on any project related object.
     """
     def has_permission(self, request, view):
         """
