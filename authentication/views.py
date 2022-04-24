@@ -29,6 +29,6 @@ class UserSignUpView(GenericAPIView):
 
         if serializer.is_valid():
             serializer.create(serializer.data)
-            return Response(serializer.data['email'],
+            return Response({'Account created': serializer.data['email']},
                             status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

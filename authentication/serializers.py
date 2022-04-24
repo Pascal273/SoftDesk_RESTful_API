@@ -4,6 +4,7 @@ from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
 
 class UserSerializer(NestedHyperlinkedModelSerializer):
+
     class Meta:
         model = get_user_model()
         fields = ['id', 'first_name', 'last_name', 'email', 'password', 'url']
