@@ -37,6 +37,9 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
+    """
+    The User-Model - uses unique email only, instead of username.
+    """
     email = models.EmailField(unique=True)
     username = None
 
