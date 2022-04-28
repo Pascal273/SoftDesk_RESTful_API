@@ -8,7 +8,6 @@ from authentication.permissions import (
     IsContributor,
     IsAuthorOrReadOnly,
     IsRelatedIssueAuthor,
-    IsRelatedProjectContributor,
     IsRelatedProjectAuthorOrReadOnly,
 )
 
@@ -50,7 +49,7 @@ class ContributorViewSet(viewsets.ModelViewSet):
     serializer_class = ContributorSerializer
     permission_classes = [permissions.IsAuthenticated,
                           IsRelatedProjectAuthorOrReadOnly,
-                          IsRelatedProjectContributor]
+                          IsContributor]
 
     def get_queryset(self, *args, **kwargs):
         project_id = self.kwargs.get('project_pk')
@@ -74,7 +73,7 @@ class IssueViewSet(viewsets.ModelViewSet):
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
     permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly,
-                          IsRelatedProjectContributor]
+                          IsContributor]
 
     def get_serializer_context(self):
         context = super(IssueViewSet, self).get_serializer_context()
@@ -108,7 +107,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated, IsAuthorOrReadOnly,
-                          IsRelatedIssueAuthor, IsRelatedProjectContributor]
+                          IsRelatedIssueAuthor, IsContributor]
 
     def get_queryset(self, *args, **kwargs):
         issue_id = self.kwargs.get('issue_pk')
