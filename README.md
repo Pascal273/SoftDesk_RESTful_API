@@ -38,3 +38,6 @@ Django -version 4.0.3
 djangorestframework-simplejwt -version 5.1.0
 djangorestframework -version 3.13.1
 drf-nested-routers -version 0.93.4
+
+## Endpoint Documentation
+[Postman](https://documenter.getpostman.com/view/20098177/UyrAFcZi)
